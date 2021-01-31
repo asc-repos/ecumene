@@ -1,0 +1,26 @@
+[
+    {
+        "hostname": "hstnm-1",
+        "domain": "dmn",
+        "position": "psthn",
+        "iface": {
+            "name": "eth0"
+        },
+        "ssh": {
+            "ip": "0.0.0.1",
+            "port": "22"
+        }
+    },
+    {
+        "hostname": "hstnm-2",
+        "domain": "dmn",
+        "position": "psthn",
+        "iface": {
+            "name": "eth0"
+        },
+        "ssh": {
+            "ip": "0.0.0.2",
+            "port": "22"
+        }
+    }
+]
