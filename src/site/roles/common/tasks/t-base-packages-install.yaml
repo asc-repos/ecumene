@@ -1,0 +1,6 @@
+---
+
+-   name:       Installing OS packages
+    apt:
+        name:   "{{ packages.purge }}"
+        state:  present

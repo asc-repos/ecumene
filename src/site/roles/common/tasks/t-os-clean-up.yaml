@@ -1,0 +1,6 @@
+---
+
+-   name:       Clean up OS packages
+    apt:
+        name:   "{{ packages.install }}"
+        state:  absent
