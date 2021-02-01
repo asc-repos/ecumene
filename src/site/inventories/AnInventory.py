@@ -27,6 +27,7 @@
 import sys
 import copy
 import json
+import os
 sys.dont_write_bytecode = True
 
 class AnHost:
@@ -39,6 +40,7 @@ class AnHost:
         self.group = self.get_group()
         self.host = self.get_host()
         self.nickname = self.get_nickname()
+        self.hostvars = self.get_hostvars()
 
     def get_group(self):
         """
@@ -71,6 +73,48 @@ class AnHost:
                                 + "." + self.mdh["domain"]
         return ansible_host_nickname
 
+    def get_hostvars(self):
+        """
+        https://docs.ansible.com/ansible/2.7/dev_guide/developing_inventory.html
+        When called with the argument --host <hostname> (where <hostname> is
+        a host from above), the script must print either an empty JSON
+        hash/dictionary, or a hash/dictionary of variables to make available
+        to templates and playbooks.
+        For example:
+            {
+                "VAR001": "VALUE",
+                "VAR002": "VALUE",
+            }
+        Printing variables is optional.
+
+        :param meta_data_hosts: 
+        :return: 
+        """
+        host_vars = {}
+
+        if "a_vars" in self.mdh:
+            host_vars.update(self.mdh["a_vars"])
+        if "ssh" in self.mdh:
+            host_vars["ansible_connection"] = "ssh"
+            if "ip" in self.mdh['ssh']:
+                host_vars["ip"] = self.mdh['ssh']['ip']
+            if "port" in self.mdh['ssh']:
+                host_vars["ansible_port"] = self.mdh['ssh']['port']
+            if "login" in self.mdh['ssh']:
+                host_vars["ansible_user"] = self.mdh['ssh']['login']
+            if "password" in self.mdh['ssh']:
+                host_vars["ansible_ssh_pass"] = self.mdh['ssh']['password']
+
+            if "ansible_ssh_private_key_file" in host_vars:
+                host_vars["ansible_ssh_private_key_file"] = os.path.expanduser(
+                    host_vars["ansible_ssh_private_key_file"])
+        return host_vars
+
+
+###
+##
+#
+
 
 class AnInventory:
     def __init__(self, meta_data):
@@ -79,7 +123,7 @@ class AnInventory:
         like dict.
         """
         self.mdh = copy.deepcopy(meta_data)
-        self.inventory = json.loads('{}')
+        self.inventory = json.loads('{"_meta": {"vars": {}}}')
         self.get_inventory(meta_data)
         self.pretty_formated = self.get_pretty_formated()
         self.example = self.get_example()
@@ -109,25 +153,9 @@ class AnInventory:
                     }
                 }
             }
-
-    def get_host_var(host_meta_data, hostname):
-        """
-        https://docs.ansible.com/ansible/2.7/dev_guide/developing_inventory.html
-        When called with the argument --host <hostname> (where <hostname> is
-        a host from above), the script must print either an empty JSON
-        hash/dictionary, or a hash/dictionary of variables to make available
-        to templates and playbooks.
-        For example:
-            {
-                "VAR001": "VALUE",
-                "VAR002": "VALUE",
-            }
-        Printing variables is optional.
-
-        :param meta_data_hosts: 
-        :return: 
-        """
-        return '{}'
+        self.inventory['_meta']['vars'][an_host.nickname] = an_host.hostvars
+        self.inventory[an_host.group]['hosts'][an_host.nickname].update(
+            an_host.hostvars)
 
     def get_example(self):
         """
