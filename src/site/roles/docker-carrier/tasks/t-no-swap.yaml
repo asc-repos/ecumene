@@ -1,0 +1,15 @@
+---
+
+-   name:       Release current swap.
+    shell:      swapoff -a
+    when:       ansible_swaptotal_mb > 0
+
+-   name:       Remove file-system mount points
+    mount:
+        name:   "{{ item }}"
+        fstype: swap
+        state:  absent
+    with_items:
+        - swap
+        - none
+

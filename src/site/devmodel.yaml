@@ -4,5 +4,7 @@
     hosts:          devmodel
     roles:
         -   role:   common
+        -   role:   with-os-repo
+        -   role:   docker-carrier
     become:         yes
     become_user:    root

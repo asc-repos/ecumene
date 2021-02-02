@@ -1,0 +1,20 @@
+---
+
+# XXX - Distro family is not checked.
+repos:
+    docker:
+        spec:       "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+        os_distro:
+            name:   Ubuntu
+            family: Debian
+        pub_key:
+            file:   download.docker.com_linux_ubuntu_gpg
+            url:    https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    k8s:
+        spec:       "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+        os_distro:
+            name:   Ubuntu
+            family: Debian
+        pub_key:
+            file:   packages.cloud.google.com_apt_doc_apt-key.gpg
+            url:    https://packages.cloud.google.com/apt/doc/apt-key.gpg

@@ -1,0 +1,14 @@
+---
+
+-   name:               Install Docker with dependencies
+    apt:
+        name:           "{{ docker_packages }}"
+        state:          present
+        update_cache:   yes
+    vars:
+        docker_packages:
+            - docker-ce
+            - docker-ce-cli
+            - containerd.io
+    notify:
+        - docker_up_and_running
