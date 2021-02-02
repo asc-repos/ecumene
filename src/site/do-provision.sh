@@ -31,6 +31,7 @@ if [ "${#}" -lt 1 ] || [ "${*}" != "${*/--help/}" ] ; then
     exit 1
 fi
 
+declare -r dir_this="$( dirname "${0}" )"
 
 declare -r file_inventory="inventory.json"
 
@@ -41,6 +42,13 @@ function validate_json {
     jq --raw-output '.' "${file_json}" 1>/dev/null
 }
 
+
+###
+##
+#
+
+
+cd "${dir_this}"
 
 "inventories/inventory.py" --list > "${file_inventory}"
 set -e ; validate_json "${file_inventory}"
@@ -72,5 +80,5 @@ if [ "${req_common,,}" == "true" ] ; then
 fi
 
 set +x
-echo "INFO:${0}:${LINENO}: Job done. Collected values are ${arg_abc_values[@]}." >&2
+echo "INFO:${0}:${LINENO}: Job done." >&2
 echo "" >&2
