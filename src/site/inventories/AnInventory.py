@@ -49,6 +49,13 @@ class AnHost:
         ansible_group = self.mdh["position"]
         return ansible_group
 
+    def get_groups_pool(self):
+        """
+        :return: Value for Ansible internal variable 'ansible_group'.
+        """
+        ansible_groups_list = self.mdh["position"]
+        return ansible_groups_list
+
     def get_host(self):
         """
         :return: Value for Ansible internal variable 'ansible_host'. 
@@ -122,9 +129,18 @@ class AnInventory:
         :param meta_data: Initial metadata for all hosts, dictinary or 
         like dict.
         """
+
+        def plain_by_group(meta_data):
+            mt = []
+            for item in meta_data:
+                for position in item["position"]:
+                    mt.append(copy.deepcopy(item))
+                    mt[-1]["position"] = position
+            return mt
+
         self.mdh = copy.deepcopy(meta_data)
         self.inventory = json.loads('{"_meta": {"vars": {}}}')
-        self.get_inventory(meta_data)
+        self.get_inventory(plain_by_group(self.mdh))
         self.pretty_formated = self.get_pretty_formated()
         self.example = self.get_example()
 

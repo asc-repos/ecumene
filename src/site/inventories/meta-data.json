@@ -2,7 +2,10 @@
     {
         "hostname": "hstnm-1",
         "domain": "dmn",
-        "position": "psthn",
+        "position": [
+            "psthn_a",
+            "psthn_b"
+        ],
         "iface": {
             "name": "eth0"
         },
@@ -22,7 +25,10 @@
     {
         "hostname": "hstnm-2",
         "domain": "dmn",
-        "position": "psthn",
+        "position": [
+            "psthn_a",
+            "psthn_b"
+        ],
         "iface": {
             "name": "eth0"
         },
