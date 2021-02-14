@@ -31,10 +31,10 @@
                                 get pod \
                                 -n kube-system \
                                 -o json \
-                                    | jq -r '.items[] \
-                                        | select(.spec.containers[].name == "kube-scheduler") \
-                                        | .status.conditions[] \
-                                        | select(.type == "Ready") \
+                                    | jq -r '.items[]
+                                        | select(.spec.containers[].name == "kube-scheduler")
+                                        | .status.conditions[]
+                                        | select(.type == "Ready")
                                         | .status'
             register:       is_k8s_sheduller_ready
             until:          is_k8s_sheduller_ready.stdout | lower == "true"
