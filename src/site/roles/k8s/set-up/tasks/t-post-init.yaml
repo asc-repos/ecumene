@@ -1,0 +1,68 @@
+---
+
+#
+#  Copyright 2013-2021 ASC
+#
+#  This file is part of "Οἰκουμένη" ("Ecumene") - set of applications and
+#  configurations to assist with deploy and set up of an environments.
+#
+#  Οἰκουμένη is free software: you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of
+#  the License, or (at your option) any later version.
+#
+#  Οἰκουμένη is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Οἰκουμένη.
+#  If not, see <http://www.gnu.org/licenses/>.
+#
+##
+
+-   name:                   Install network
+    block:
+        -   name:           Waiting for K8s Scheduller to be ready
+            shell:          |
+                            export KUBECONFIG=/etc/kubernetes/admin.conf
+                            kubectl \
+                                get pod \
+                                -n kube-system \
+                                -o json \
+                                    | jq -r '.items[] \
+                                        | select(.spec.containers[].name == "kube-scheduler") \
+                                        | .status.conditions[] \
+                                        | select(.type == "Ready") \
+                                        | .status'
+            register:       is_k8s_sheduller_ready
+            until:          is_k8s_sheduller_ready.stdout | lower == "true"
+            delay:          4
+            retries:        4657
+            changed_when:   no
+
+        -   name:               Upload Canal configuration
+            template:
+                src:            canal.yaml
+                dest:           canal.yaml
+                owner: root
+                group: root
+                mode: '0600'
+
+        -   name:               Install Canal - Do install
+            shell:              |
+                                export KUBECONFIG=/etc/kubernetes/admin.conf
+                                kubectl apply -f canal.yaml
+
+            register:           canal_network_install_output
+
+        -   name:               Install Canal - Install stdout
+            debug:
+                var:            canal_network_install_output.stdout_lines
+
+        -   name:               Install Canal - Install stderr
+            debug:
+                var:            canal_network_install_output.stderr_lines
+
+    when: inventory_hostname == groups['k8s_coordinator'][0]

@@ -1,0 +1,98 @@
+---
+
+#
+#  Copyright 2013-2021 ASC
+#
+#  This file is part of "Οἰκουμένη" ("Ecumene") - set of applications and
+#  configurations to assist with deploy and set up of an environments.
+#
+#  Οἰκουμένη is free software: you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of
+#  the License, or (at your option) any later version.
+#
+#  Οἰκουμένη is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Οἰκουμένη.
+#  If not, see <http://www.gnu.org/licenses/>.
+#
+##
+
+-   name:               Search for tools - K8s
+    shell:              which kubectl
+    register:           is_kubectl_path
+    changed_when:       no
+    ignore_errors:      yes
+
+-   name:               Search for tools - Docker
+    shell:              which docker
+    register:           is_docker_path
+    changed_when:       no
+    ignore_errors:      yes
+
+-   name:               Clean up by KubeAdm parts
+    shell:              kubeadm reset --force
+    when:               is_kubectl_path.stdout
+
+-   name:               Drop containers
+    shell:              |
+                        set -xeu
+                        declare -r detected_present_containers_id_pool="$( docker ps -a -q )"
+                        if test -n "${detected_present_containers_id_pool}" ; then
+                            docker rm -f ${detected_present_containers_id_pool}
+                        fi
+    args:
+        executable:     /bin/bash
+    when:               is_docker_path.stdout
+
+-   name:               Disable as smth as a part of Systemd ecosystem
+    service:
+        name:           kubelet
+        state:          stopped
+        enabled:        no
+        force:          yes
+        daemon_reload:  yes
+    when:               is_kubectl_path.stdout
+
+-   name:               Disable as smth as a part of Systemd ecosystem
+    service:
+        name:           docker
+        state:          stopped
+        enabled:        no
+        force:          yes
+        daemon_reload:  yes
+    when:               is_docker_path.stdout
+
+-   name:               Remove packages by OS packages manager
+    apt:
+        name:           "{{ k8s.packages + docker.packages }}"
+        state:          absent
+        purge:          yes
+
+-   name:               Drop files and directories
+    file:
+        path:           "{{ item }}"
+        state:          absent
+    with_items:
+        - /var/lib/etcd/
+        - /var/lib/kubelet/
+        - /etc/kubernetes/
+        - ~/.kube/
+        - /var/lib/docker/
+
+-   name:               Drop Netfilter rules
+    shell:              |
+                        set -xe
+                        iptables -P INPUT ACCEPT
+                        iptables -P FORWARD ACCEPT
+                        iptables -P OUTPUT ACCEPT
+                        iptables -t nat -F
+                        iptables -t mangle -F
+                        iptables -F  # Flush all chains
+                        iptables -X
+    args:
+        executable:     /bin/bash

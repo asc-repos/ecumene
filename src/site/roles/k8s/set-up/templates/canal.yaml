@@ -1,4 +1,15 @@
 ---
+
+##
+#   This file origin is
+#       https://docs.projectcalico.org/manifests/canal.yaml
+#
+#   Documentation:
+#       https://docs.projectcalico.org/about/about-calico
+#       https://github.com/projectcalico/canal/tree/master/k8s-install
+#       https://docs.projectcalico.org/getting-started/kubernetes/flannel/flannel
+
+
 # Source: calico/templates/calico-config.yaml
 # This ConfigMap is used to configure a self-hosted Canal installation.
 kind: ConfigMap
@@ -64,7 +75,7 @@ data:
   # Flannel network configuration. Mounted into the flannel container.
   net-conf.json: |
     {
-      "Network": "10.244.0.0/16",
+      "Network": "{{ k8s.networks.pod }}",
       "Backend": {
         "Type": "vxlan"
       }

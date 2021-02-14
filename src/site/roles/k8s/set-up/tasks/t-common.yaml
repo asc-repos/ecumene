@@ -22,11 +22,15 @@
 #
 ##
 
--   name:           Development model
-    hosts:          devmodel
-    roles:
-        -   role:   common
-        -   role:   with-os-repo
-        -   role:   docker-carrier
-    become:         yes
-    become_user:    root
+-   name:               Install K8s OS packages
+    apt:
+        name:           "{{ k8s.packages }}"
+        state:          present
+        update_cache:   yes
+
+-   name:               Kubelet daemon up and running by Systemd
+    systemd:
+        name:           kubelet
+        state:          restarted
+        masked:         no
+        daemon_reload:  yes

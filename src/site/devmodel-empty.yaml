@@ -22,11 +22,9 @@
 #
 ##
 
--   name:           Development model
+-   name:           Development model - clean up
     hosts:          devmodel
     roles:
-        -   role:   common
-        -   role:   with-os-repo
-        -   role:   docker-carrier
+        -   role:   k8s/purge
     become:         yes
     become_user:    root

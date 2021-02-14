@@ -22,11 +22,13 @@
 #
 ##
 
--   name:           Development model
-    hosts:          devmodel
-    roles:
-        -   role:   common
-        -   role:   with-os-repo
-        -   role:   docker-carrier
-    become:         yes
-    become_user:    root
+-   include_tasks:  t-no-swap.yaml
+-   include_tasks:  t-common.yaml
+
+-   include_tasks:  t-coordinator.yaml
+    when:           inventory_hostname in groups['k8s_coordinator']
+
+-   include_tasks:  t-worker.yaml
+    when:           inventory_hostname in groups['k8s_worker']
+
+-   include_tasks:  t-post-init.yaml

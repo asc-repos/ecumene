@@ -1,20 +1,46 @@
 ---
 
+#
+#  Copyright 2013-2021 ASC
+#
+#  This file is part of "Οἰκουμένη" ("Ecumene") - set of applications and
+#  configurations to assist with deploy and set up of an environments.
+#
+#  Οἰκουμένη is free software: you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of
+#  the License, or (at your option) any later version.
+#
+#  Οἰκουμένη is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Οἰκουμένη.
+#  If not, see <http://www.gnu.org/licenses/>.
+#
+##
+
+-   name:               Update Apt package manager metadata  # Shell scripting work is strong and reliable under all circumstances across distros and years.
+    shell:              apt-get update
+
 -   name:               HTTPS support for Apt
     apt:
         name:           "{{ deb_pack_list }}"
-        state:          absent
+        state:          present
     vars:
         deb_pack_list:
             - apt-transport-https
             - ca-certificates
             - curl
+            - gnupg
             - gnupg-agent
             - software-properties-common
 
 
 -   name:               Upload file with Apt public key
-    ansible.builtin.copy:
+    copy:
         src:            "{{ item.pub_key.file }}"
         dest:           "/root/{{ item.pub_key.file | basename }}"
         owner: root
@@ -25,9 +51,10 @@
         - "{{ repos.k8s }}"
 
 -   name:               Insert Apt public key for Docker Apt repo
-    apt_key:
-        file:           "/root/{{ item.pub_key.file | basename }}"
-        state:          present
+    #apt_key:
+    #    file:           "/root/{{ item.pub_key.file | basename }}"
+    #    state:          present
+    shell:              apt-key add "/root/{{ item.pub_key.file | basename }}"
     with_items:
         - "{{ repos.docker }}"
         - "{{ repos.k8s }}"

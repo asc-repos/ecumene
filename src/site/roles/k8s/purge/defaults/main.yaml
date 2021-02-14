@@ -22,11 +22,15 @@
 #
 ##
 
--   name:           Development model
-    hosts:          devmodel
-    roles:
-        -   role:   common
-        -   role:   with-os-repo
-        -   role:   docker-carrier
-    become:         yes
-    become_user:    root
+k8s:
+    packages:
+        - "kubelet"
+        - "kubeadm"
+        - "kubectl"
+
+
+docker:
+    packages:
+        - "docker-ce"
+        - "docker-ce-cli"
+        - "containerd.io"

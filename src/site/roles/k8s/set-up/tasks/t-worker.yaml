@@ -22,11 +22,14 @@
 #
 ##
 
--   name:           Development model
-    hosts:          devmodel
-    roles:
-        -   role:   common
-        -   role:   with-os-repo
-        -   role:   docker-carrier
-    become:         yes
-    become_user:    root
+-   name:           "Waiting for coordinator's '{{ groups['k8s_coordinator'][0] }}' set up to be finished"
+    shell:          "true"
+    until:          hostvars[groups['k8s_coordinator'][0]]['cmd_node_join'] is defined
+    delay:          4
+    retries:        4657
+    changed_when:   no
+
+-   name:           "Joining workers to K8s cluster"
+    shell:          /bin/bash -c "{{ hostvars[groups['k8s_coordinator'][0]]['cmd_join_worker'] }}"
+    args:
+        executable: /bin/bash

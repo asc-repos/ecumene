@@ -1,20 +1,35 @@
 ---
 
-# XXX - Distro family is not checked.
+#
+#  Copyright 2013-2021 ASC
+#
+#  This file is part of "Οἰκουμένη" ("Ecumene") - set of applications and
+#  configurations to assist with deploy and set up of an environments.
+#
+#  Οἰκουμένη is free software: you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of
+#  the License, or (at your option) any later version.
+#
+#  Οἰκουμένη is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Οἰκουμένη.
+#  If not, see <http://www.gnu.org/licenses/>.
+#
+##
+
 repos:
     docker:
-        spec:       "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
-        os_distro:
-            name:   Ubuntu
-            family: Debian
+        spec:       "deb [arch=amd64] https://download.docker.com/linux/debian buster stable"
         pub_key:
             file:   download.docker.com_linux_ubuntu_gpg
             url:    https://packages.cloud.google.com/apt/doc/apt-key.gpg
     k8s:
         spec:       "deb https://apt.kubernetes.io/ kubernetes-xenial main"
-        os_distro:
-            name:   Ubuntu
-            family: Debian
         pub_key:
             file:   packages.cloud.google.com_apt_doc_apt-key.gpg
             url:    https://packages.cloud.google.com/apt/doc/apt-key.gpg
