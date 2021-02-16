@@ -32,3 +32,6 @@
     when:           inventory_hostname in groups['k8s_worker']
 
 -   include_tasks:  t-post-init.yaml
+
+-   include_tasks:  t-configure-k8s-operator-env.yaml
+    when:           inventory_hostname in groups['k8s_coordinator']

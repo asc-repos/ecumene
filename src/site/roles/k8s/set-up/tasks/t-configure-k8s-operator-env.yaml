@@ -1,0 +1,68 @@
+---
+
+#
+#  Copyright 2013-2021 ASC
+#
+#  This file is part of "Οἰκουμένη" ("Ecumene") - set of applications and
+#  configurations to assist with deploy and set up of an environments.
+#
+#  Οἰκουμένη is free software: you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of
+#  the License, or (at your option) any later version.
+#
+#  Οἰκουμένη is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Οἰκουμένη.
+#  If not, see <http://www.gnu.org/licenses/>.
+#
+##
+
+
+-   name:                   Define K8s operator's login
+    set_fact:
+        k8s_operator_login: "{{ ansible_user }}"
+-   name:                   Define K8s operator's group
+    set_fact:
+        k8s_operator_group: "{{ ansible_user }}"
+
+
+-   name:                   Define K8s operator's home directory
+    set_fact:
+        k8s_operator_h_dir: "{{ lookup('env','HOME') }}"
+    become:                 yes
+    become_user:            "{{ k8s_operator_login }}"
+
+
+-   name:                   Pick up K8s administrator K8s context configuration
+    block:
+        -   name:           Create K8s directory.
+            file:
+                path:       "~{{ k8s_operator_login }}/.kube"
+                owner:      "{{ k8s_operator_login }}"
+                group:      "{{ k8s_operator_group }}"
+                mode:       "0700"
+                state:      directory
+
+        -   name:           Copy configuration into home directory.
+            shell:          >
+                            ls
+                            "/etc/kubernetes/"
+
+        -   name:           Copy configuration into home directory.
+            shell:          >
+                            cp
+                            "/etc/kubernetes/admin.conf"
+                            "{{ k8s_operator_h_dir }}/.kube/config"
+
+        -   name:           Set file's ownership.
+            file:
+                path:       "~{{ k8s_operator_login }}/.kube/config"
+                owner:      "{{ k8s_operator_login }}"
+                group:      "{{ k8s_operator_group }}"
+                mode:       "0600"
+
