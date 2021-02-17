@@ -1,0 +1,42 @@
+#
+#  Copyright 2013-2021 ASC
+#
+#  This file is part of "Οἰκουμένη" ("Ecumene") - set of applications and
+#  configurations to assist with deploy and set up of an environments.
+#
+#  Οἰκουμένη is free software: you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of
+#  the License, or (at your option) any later version.
+#
+#  Οἰκουμένη is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Οἰκουμένη.
+#  If not, see <http://www.gnu.org/licenses/>.
+#
+##
+
+require 'json'
+
+vm_params = JSON.parse(File.read("meta-data.json"))
+
+vagrant_conf_format_version = "2"
+
+Vagrant.configure(vagrant_conf_format_version) do |cnf|
+    vm_params.each do |single_host_param|
+        cnf.vm.define(single_host_param["hostname"]) do |c|
+            c.vm.provider(:libvirt) do |p|
+                p.memory = "2048"
+                p.cpus = "2"
+            end
+            c.vm.box = single_host_param["distro"]
+            c.vm.network "private_network", ip: single_host_param["ssh"]["ip"]
+            c.vm.synced_folder '.', '/vagrant', disabled: true  # For Debian default Vagrant's synced folder needs additional sudo access for NFS mounts to be set up.
+            c.vm.provision "shell", inline: "date > /marker"
+        end
+    end
+end
