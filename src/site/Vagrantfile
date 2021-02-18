@@ -36,7 +36,7 @@ Vagrant.configure(vagrant_conf_format_version) do |cnf|
             c.vm.box = single_host_param["distro"]
             c.vm.network "private_network", ip: single_host_param["ssh"]["ip"]
             c.vm.synced_folder '.', '/vagrant', disabled: true  # For Debian default Vagrant's synced folder needs additional sudo access for NFS mounts to be set up.
-            c.vm.provision "shell", inline: "packs_list='python3 jq' ; if ! which python3 jq ; then if which apt-get ; then apt-get update && apt-get install --yes ${packs_list} ; elif which dnf ; then dnf update && dnf install ---assume-yes ${packs_list} ; else exit 1 ; fi ; fi"
+            c.vm.provision "shell", inline: "packs_list=('python3' 'jq') ; if ! which python3 jq ; then if which apt-get ; then apt-get update && apt-get install --yes \"${packs_list[@]}\" ; elif which dnf ; then dnf update && dnf install ---assume-yes ${packs_list} ; else exit 1 ; fi ; fi"
             c.vm.provision "ansible" do |a|
                 a.playbook = "vagrant-nodes-bootstrap.yaml"
                 a.extra_vars = {
