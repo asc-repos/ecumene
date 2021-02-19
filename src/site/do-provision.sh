@@ -42,6 +42,15 @@ function validate_json {
     jq --raw-output '.' "${file_json}" 1>/dev/null
 }
 
+function launch_ansible {
+    set -e
+    local -r f_inventory="${1}"
+    shift
+    time \
+        ansible-playbook \
+            --inventory "${f_inventory}" \
+            "${@}"
+}
 
 ###
 ##
@@ -53,12 +62,24 @@ cd "${dir_this}"
 "inventories/inventory.py" --list > "${file_inventory}"
 set -e ; validate_json "${file_inventory}"
 
-req_common="false"
+req_arbitrary="false"
+req_delete="false"
+req_k8s="false"
+req_k8s_purge="false"
 while [ ${#} -gt 0 ] ; do
     arg_name="${1}"
     case "${arg_name}" in
-        --common)
-            req_common=true
+        --arbitrary)
+            req_arbitrary="true"
+            ;;
+        --delete)
+            req_delete="true"
+            ;;
+        --k8s)
+            req_k8s="true"
+            ;;
+        --no-k8s)
+            req_k8s_purge="true"
             ;;
         --)
             shift
@@ -72,11 +93,18 @@ while [ ${#} -gt 0 ] ; do
 done
 
 
-if [ "${req_common,,}" == "true" ] ; then
-    time \
-        ansible-playbook \
-            --inventory "${file_inventory}" \
-            "${@}"
+if [ "${req_arbitrary,,}" == "true" ] ; then
+    launch_ansible "${file_inventory}" "${@}"
+fi
+if [ "${req_k8s_purge,,}" == "true" ] ; then
+    launch_ansible "${file_inventory}" "${@}" k8s-empty.yaml
+fi
+if [ "${req_k8s,,}" == "true" ] ; then
+    mkdir -p -m 700 ~/.kube
+    launch_ansible "${file_inventory}" "${@}" k8s.yaml
+fi
+if [ "${req_delete,,}" == "true" ] ; then
+    vagrant destroy --force --parallel
 fi
 
 set +x
