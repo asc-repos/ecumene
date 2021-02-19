@@ -63,6 +63,7 @@ cd "${dir_this}"
 set -e ; validate_json "${file_inventory}"
 
 req_arbitrary="false"
+req_vm="false"
 req_delete="false"
 req_k8s="false"
 req_k8s_purge="false"
@@ -71,6 +72,9 @@ while [ ${#} -gt 0 ] ; do
     case "${arg_name}" in
         --arbitrary)
             req_arbitrary="true"
+            ;;
+        --vm)
+            req_vm="true"
             ;;
         --delete)
             req_delete="true"
@@ -92,7 +96,9 @@ while [ ${#} -gt 0 ] ; do
     shift
 done
 
-
+if [ "${req_vm,,}" == "true" ] ; then
+    vagrant up --parallel
+fi
 if [ "${req_arbitrary,,}" == "true" ] ; then
     launch_ansible "${file_inventory}" "${@}"
 fi
