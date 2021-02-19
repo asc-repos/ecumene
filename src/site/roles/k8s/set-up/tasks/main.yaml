@@ -35,3 +35,6 @@
 
 -   include_tasks:  t-configure-k8s-operator-env.yaml
     when:           inventory_hostname in groups['k8s_coordinator']
+
+-   include_tasks:  t-download.yaml
+    when:           inventory_hostname == groups['k8s_coordinator'][0]

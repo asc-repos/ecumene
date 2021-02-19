@@ -1,0 +1,9 @@
+---
+
+-   name:                   Download managment configuration aka contexts
+    fetch:
+        src:                /etc/kubernetes/admin.conf
+        dest:               ~/.kube/k8s-admin.conf
+        flat:               yes
+        validate_checksum:  yes
+        fail_on_missing:    yes
