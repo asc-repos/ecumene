@@ -67,6 +67,7 @@ req_vm="false"
 req_delete="false"
 req_k8s="false"
 req_k8s_purge="false"
+req_syslog="false"
 while [ ${#} -gt 0 ] ; do
     arg_name="${1}"
     case "${arg_name}" in
@@ -84,6 +85,9 @@ while [ ${#} -gt 0 ] ; do
             ;;
         --no-k8s)
             req_k8s_purge="true"
+            ;;
+        --syslog)
+            req_syslog="true"
             ;;
         --)
             shift
@@ -108,6 +112,10 @@ fi
 if [ "${req_k8s,,}" == "true" ] ; then
     mkdir -p -m 700 ~/.kube
     launch_ansible "${file_inventory}" "${@}" k8s.yaml
+fi
+if [ "${req_syslog,,}" == "true" ] ; then
+    mkdir -p -m 700 ~/.kube
+    launch_ansible "${file_inventory}" "${@}" syslog-acceptor.yaml
 fi
 if [ "${req_delete,,}" == "true" ] ; then
     vagrant destroy --force --parallel

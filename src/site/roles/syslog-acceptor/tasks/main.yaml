@@ -1,0 +1,34 @@
+---
+
+##
+#   https://www.keycdn.com/support/configure-syslog-server
+#
+
+-   name:               Install Rsyslog OS package
+    apt:
+        pkg:
+        - rsyslog
+        state:              latest
+        update_cache:       yes
+
+
+-   name:               Enable listening to UDP by Syslog
+    lineinfile:
+        path:           /etc/rsyslog.conf
+        regexp:         '^module'
+        line:           'module(load="imudp")'
+
+-   name:               Syslog input configuration
+    template:
+        src:            etc_rsyslog.d_00-syslog-acceptor.conf
+        dest:           /etc/rsyslog.d/00-syslog-acceptor.conf
+        owner: root
+        group: root
+        mode: '0755'
+
+
+-   name:               Make Syslog be started
+    systemd:
+        state:          restarted
+        daemon_reload:  yes
+        name:           rsyslog

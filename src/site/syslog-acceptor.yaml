@@ -1,0 +1,8 @@
+---
+
+-   name:           Syslog acceptor
+    hosts:          log_infra
+    roles:
+        -   role:   syslog-acceptor
+    become:         yes
+    become_user:    root
