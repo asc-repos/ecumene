@@ -24,7 +24,7 @@
         dest:           /etc/rsyslog.d/00-syslog-acceptor.conf
         owner: root
         group: root
-        mode: '0755'
+        mode: '0644'
 
 
 -   name:               Make Syslog be started
