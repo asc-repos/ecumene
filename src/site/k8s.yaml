@@ -27,9 +27,12 @@
         -   k8s_coordinator
         -   k8s_worker
     roles:
+        -   role:   uni/bootstrap
         -   role:   common
         -   role:   with-os-repo
         -   role:   docker-carrier
         -   role:   k8s/set-up
+        -   role:   uni/tear-down
     become:         yes
     become_user:    root
+

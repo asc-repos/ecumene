@@ -22,6 +22,8 @@
 #
 ##
 
+# TODO - Clean up of satellites: Helm, user space files???
+
 -   name:           K8s model - clean up
     hosts:
         -   k8s_coordinator

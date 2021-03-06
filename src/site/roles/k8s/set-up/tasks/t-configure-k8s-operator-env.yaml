@@ -23,6 +23,12 @@
 ##
 
 
+#-   name: Create directory for artifacts.
+    #file:
+        #path: /tmp/artifacts
+        #state: directory
+
+
 -   name:                   Define K8s operator's login
     set_fact:
         k8s_operator_login: "{{ ansible_user }}"
@@ -66,3 +72,32 @@
                 group:      "{{ k8s_operator_group }}"
                 mode:       "0600"
 
+        -   name:               Upload Helm distro.
+            synchronize:
+                src:            "artifacts/{{ item }}"  # If this path is relative, then it's relative to Ansible control machine working directory (this is NOT relative to roles/*/files).
+                dest:           "/tmp/artifacts"
+                rsync_opts:
+                    - "--copy-links"
+                    #- "--relative"  # It do not mean what do you think. 'man rsync' - This means that the full path names specified on the command line are sent to the server rather than just the last parts of the filenames.
+                checksum:       true
+                verify_host:    true
+            with_items:
+                - "helm-v{{ helm.3.version }}-{{ helm.misc.os }}-{{ helm.misc.arch }}.tar.gz"
+
+
+
+        -   name:               Upload Helm installer.
+            template:
+                src:            install-helm.sh
+                dest:           /tmp/artifacts/install-helm.sh
+                owner: root
+                group: root
+                mode: '0755'
+
+        -   name:               Install Helm.
+            shell:              >
+                                cd "/tmp/artifacts/"
+                                /tmp/artifacts/install-helm.sh \
+                                    "{{ helm.3.version }}" \
+                                    "{{ helm.misc.os }}" \
+                                    "{{ helm.misc.arch }}" \

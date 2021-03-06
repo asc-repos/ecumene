@@ -22,23 +22,5 @@
 #
 ##
 
--   include_tasks:  t-no-swap.yaml
--   include_tasks:  t-common.yaml
 
--   include_tasks:  t-coordinator.yaml
-    when:           inventory_hostname in groups['k8s_coordinator']
-
--   include_tasks:  t-worker.yaml
-    when:           inventory_hostname in groups['k8s_worker']
-
--   include_tasks:  t-post-init.yaml
-
--   include_tasks:  t-configure-k8s-operator-env.yaml
-    when:           inventory_hostname in groups['k8s_coordinator'][0]
-
--   include_tasks:  t-ingress-controller-nginx.yaml
-    when:           inventory_hostname == groups['k8s_coordinator'][0]
-
--   include_tasks:  t-download.yaml
-    when:           inventory_hostname == groups['k8s_coordinator'][0]
-
+-   import_tasks: t-teardown.yaml
