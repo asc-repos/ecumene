@@ -23,17 +23,33 @@
 ##
 
 
--   name:               Upload Ingress Controller Helm.
+-   set_fact:
+        file_helm_values="/tmp/artifacts/{{ ingress_controller.nginx.chart.dir }}/values.yaml"
+
+-   name:               Upload Ingress Controller Helm both as Tar and as directory.
     synchronize:
-        src:            "artifacts/{{ item }}"  # If this path is relative, then it's relative to Ansible control machine working directory (this is NOT relative to roles/*/files).
-        dest:           "/tmp/artifacts/{{ item }}"
+        src:            "{{ item.donor }}"  # If this path is a file and relative, then it's relative to Ansible control machine working directory (file path is NOT relative to 'roles/*/files'). If the path is a directory, it's relative to 'roles/*/files'.
+        dest:           "{{ item.acceptor }}"
         rsync_opts:
             - "--copy-links"
+            - "--hard-links"
             #- "--relative"  # It do not mean what do you think. 'man rsync' - This means that the full path names specified on the command line are sent to the server rather than just the last parts of the filenames.
         checksum:       true
         verify_host:    true
     with_items:
-        - "ingress-controller-nginx-3.23.0.tgz"  # helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx ; helm pull ingress-nginx/ingress-nginx
+        - donor:        "{{ ingress_controller.nginx.chart.dir }}"
+          acceptor:     "/tmp/artifacts/{{ ingress_controller.nginx.chart.dir | dirname }}"
+        - donor:        "artifacts/{{ ingress_controller.nginx.chart.tar }}"  # It's useage and application is underdevelopment. May be deprecated, may be not.
+          acceptor:     "/tmp/artifacts/{{ ingress_controller.nginx.chart.tar }}"
+
+
+-   name:               Upload Helm Chart parameters.
+    template:
+        src:            "ingress-controller-nginx-values.yaml"
+        dest:           "{{ file_helm_values }}"
+        owner: root
+        group: root
+        mode: '0600'
 
 
 -   name:   Install Ingress Controller.
@@ -45,12 +61,21 @@
             function act_on_helm_chart {
                 set -eu
                 local -r action="${1}"
-                helm \
-                    "${action}" \
-                    --create-namespace \
-                    --namespace kube-system \
-                    "${helm_name}" \
-                    "/tmp/artifacts/ingress-controller-nginx-3.23.0.tgz"
+                for chart_location in \
+                        "/tmp/artifacts/{{ ingress_controller.nginx.chart.dir }}" \
+                        "/tmp/artifacts/{{ ingress_controller.nginx.chart.tar }}"
+                do
+                    if [ -e "${chart_location}" ] ; then
+                        helm \
+                            "${action}" \
+                            --create-namespace \
+                            --namespace kube-system \
+                            --values "{{ file_helm_values }}" \
+                            "${helm_name}" \
+                            "${chart_location}"
+                        break
+                    fi
+                done
             }
             if helm status --namespace kube-system "${helm_name}" \
                 | egrep '^STATUS: deployed$'
@@ -63,6 +88,8 @@
                 helm delete --namespace kube-system "${helm_name}" || true
                 act_on_helm_chart install
             fi
+            set +x
+            echo "INFO:$( basename "${0}" ):${LINENO}: Job done." >&2
     args:
         executable: /bin/bash
     register: fb_ingress_contrller_install

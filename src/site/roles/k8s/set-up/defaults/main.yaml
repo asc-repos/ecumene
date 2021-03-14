@@ -49,6 +49,11 @@ k8s:
     networks:
         pod: "172.31.0.0/16"  # 172.16.0.0/12 = 172.16.0.0 - 172.31.255.255
 
+ingress_controller:
+    nginx:
+        chart:
+            tar: ingress-controller-nginx-3.23.0.tgz
+            dir: helm-chart/ingress-controller-nginx
 
 docker:
     version: "5:19.03.14~3-0~debian-buster"
