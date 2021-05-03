@@ -62,6 +62,8 @@ cd "${dir_this}"
 "inventories/inventory.py" --list > "${file_inventory}"
 set -e ; validate_json "${file_inventory}"
 
+req_crafttable="false"
+req_build_station="false"
 req_arbitrary="false"
 req_vm="false"
 req_delete="false"
@@ -71,6 +73,12 @@ req_syslog="false"
 while [ ${#} -gt 0 ] ; do
     arg_name="${1}"
     case "${arg_name}" in
+        --craft-table)
+            req_crafttable="true"
+            ;;
+        --build-station)
+            req_build_station="true"
+            ;;
         --arbitrary)
             req_arbitrary="true"
             ;;
@@ -100,6 +108,12 @@ while [ ${#} -gt 0 ] ; do
     shift
 done
 
+if [ "${req_crafttable,,}" == "true" ] ; then
+    launch_ansible "${file_inventory}" "${@}" "craft-table.yaml"
+fi
+if [ "${req_build_station,,}" == "true" ] ; then
+    launch_ansible "${file_inventory}" "${@}" "build-station.yaml"
+fi
 if [ "${req_vm,,}" == "true" ] ; then
     vagrant up --parallel
 fi
