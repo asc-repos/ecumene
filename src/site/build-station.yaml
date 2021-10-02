@@ -27,6 +27,7 @@
         -           build_station
     roles:
         -   common
+        -   with-os-repo
         -   crafttable
         -   build-station
     become:         yes
