@@ -29,6 +29,7 @@
         owner: "root"
         group: "root"
         mode:   0755
+    become: yes
     with_items:
         -     acceptor: /home/.opt/backgrounds/wallpaper
         -     acceptor: /home/.opt/desktop-files
@@ -40,6 +41,7 @@
         dest: "{{ item.acceptor }}"
         owner: "root"
         group: "root"
+    become: yes
     with_items:
         -    donor: home_dot-opt_backgrounds/wallpaper
              acceptor: /home/.opt/backgrounds
