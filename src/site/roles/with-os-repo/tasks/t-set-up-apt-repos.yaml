@@ -39,25 +39,33 @@
             - software-properties-common
 
 
--   name:               Upload file with Apt public key
+-   name:       Create Apt keys directory
+    file:
+        path:   /usr/share/keyrings
+        state:  directory
+        mode:   '0755'
+
+-   name:       Upload file with Apt public key
     copy:
-        src:            "{{ item.pub_key.file }}"
-        dest:           "/root/{{ item.pub_key.file | basename }}"
-        owner: root
-        group: root
-        mode: '0644'
+        src:    "{{ item.pub_key.file }}"
+        dest:   "/usr/share/keyrings/{{ item.pub_key.file | basename }}"
+        owner:  root
+        group:  root
+        mode:   '0644'
     with_items:
         - "{{ repos.docker }}"
-        - "{{ repos.k8s }}"
+        #- "{{ repos.k8s }}"
+        - "{{ repos.packer }}"
 
 -   name:               Insert Apt public key for Docker Apt repo
     #apt_key:
-    #    file:           "/root/{{ item.pub_key.file | basename }}"
+    #    file:           "/usr/share/keyrings/{{ item.pub_key.file | basename }}"
     #    state:          present
-    shell:              apt-key add "/root/{{ item.pub_key.file | basename }}"
+    shell:              apt-key add "/usr/share/keyrings/{{ item.pub_key.file | basename }}"
     with_items:
         - "{{ repos.docker }}"
-        - "{{ repos.k8s }}"
+        #- "{{ repos.k8s }}"
+        - "{{ repos.packer }}"
 
 -   name:               Add Apt repository
     apt_repository:     # It may not work correctly with older OS
@@ -69,12 +77,15 @@
         state:          present
     with_items:
         - "{{ repos.docker }}"
-        - "{{ repos.k8s }}"
+        #- "{{ repos.k8s }}"
+        - "{{ repos.packer }}"
 
 -   name:               Drop temporary file
     file:
-        path:           "/root/{{ item.pub_key.file | basename }}"
+        path:           "/usr/share/keyrings/{{ item.pub_key.file | basename }}"
         state:          absent
     with_items:
         - "{{ repos.docker }}"
-        - "{{ repos.k8s }}"
+        #- "{{ repos.k8s }}"
+        - "{{ repos.packer }}"
+    changed_when:       false
