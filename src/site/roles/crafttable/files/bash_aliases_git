@@ -1,0 +1,57 @@
+#
+#  Copyright 2013-2021 ASC
+#
+#  This file is part of "Οἰκουμένη" ("Ecumene") - set of applications and
+#  configurations to assist with deploy and set up of an environments.
+#
+#  Οἰκουμένη is free software: you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of
+#  the License, or (at your option) any later version.
+#
+#  Οἰκουμένη is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Οἰκουμένη.
+#  If not, see <http://www.gnu.org/licenses/>.
+#
+##
+
+alias gsk='git status && gitk &'
+alias gs='git status'
+alias gb='git branch'
+alias gba='git branch -a'
+alias gc='git checkout'
+alias gl="git log --graph --date=iso --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ad) %C(bold blue)%an <%ae>%Creset' --abbrev-commit"
+alias git-tag-time="git log --tags --simplify-by-decoration --pretty='format:%ai %d'"
+alias git-git-show-branch-for-commit="git show-branch"
+alias gi='git-icdiff'
+alias git-unstage-file='git reset -- '
+
+
+# --anchor-commit <commit>                optional commit to open the log for
+# --blame [file]                          open a blame for the given file (file
+#                                           may contain trailing :<linenumber>)
+# --cwd <File>                            relative paths are given relative to
+#                                           this absolute path
+# --investigate [file]                    open a DeepGit view for the given file
+#                                           (file may contain trailing :
+#                                           <linenumber>)
+# --list-index [repository-root]          list the files of the Git index of the
+#                                           given directory
+# --log [directory]                       open the given repository in the log
+#                                           view
+# --open [directory]                      open the given repository in the GUI
+# --status [repository-root]              shows the Git status of the given
+#                                           directory
+# --write-default-theme-file              write the default theme file
+alias sgit="/usr/share/smartgit/bin/smartgit.sh"
+alias sgit-anchor-commit="/usr/share/smartgit/bin/smartgit.sh --anchor-commit"
+alias sgit-blame="/usr/share/smartgit/bin/smartgit.sh --blame"
+alias sgit-investigate="/usr/share/smartgit/bin/smartgit.sh --investigate"
+alias sgit-log="/usr/share/smartgit/bin/smartgit.sh --log"
+alias sgit-open="/usr/share/smartgit/bin/smartgit.sh --open"
+alias sgit-status="/usr/share/smartgit/bin/smartgit.sh --status"

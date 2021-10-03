@@ -32,7 +32,6 @@
 ####     fi
 
 
-
 alias get-tag-time="date '+%Y-%m-%d-%H%M$( date '+%z' | sed -e 's#-#m#g;s#+#p#g' )' "
 alias get-tag-time-full="date '+%Y-%m-%d-%H%M$( date '+%z' | sed -e 's#-#m#g;s#+#p#g' )-%S.%N' "
 alias get-tag-time-sec="date '+%Y-%m-%d-%H%M$( date '+%z' | sed -e 's#-#m#g;s#+#p#g' )-%S' "
@@ -40,4 +39,16 @@ alias get-tag-time-sec="date '+%Y-%m-%d-%H%M$( date '+%z' | sed -e 's#-#m#g;s#+#
 
 while read fName ; do
     source "${fName}"
-done <<< "$( find ~ -maxdepth 1 -type f -name ".bash_aliases_*" | egrep -v '\.swp$' )"
+done <<< "$( find ~ -maxdepth 1 -type f -name ".bash_aliases_*" \
+                | egrep -v '\.swp$' )"
+
+
+alias a='
+while read fName ; do
+    cat "${fName}" | egrep -v "^#"
+done <<< "$( find ~ -maxdepth 1 -type f -name ".bash_aliases_*" \
+                | egrep -v '\.swp$'\
+                | sort -h )"
+'
+
+alias sa='source ~/.bash_aliases'

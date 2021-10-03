@@ -1,5 +1,3 @@
----
-
 #
 #  Copyright 2013-2021 ASC
 #
@@ -22,30 +20,11 @@
 #
 ##
 
--   copy:
-        src: "{{ item }}"
-        dest: "{{ linux.dir_home }}/.{{ item }}"
-        owner: "{{ linux.uid }}"
-        group: "{{ linux.gid }}"
-        mode: 0644
-    with_items:
-        - bash_aliases
-        - bash_aliases_common
-        - bash_aliases_connections
-        - bash_aliases_git
-        - bash_aliases_misc
-        - bash_aliases_ssh
-        - bash_aliases_taskell
-        - bash_aliases_vault
-        - bash_aliases_virtualization
-        - ps1.sh
-        - bashrc
+alias ls='ls --time-style="+%Y-%m-%d %H:%M" --color --group-directories-first'
+alias h='history'
+alias g="egrep --color"
+alias p='pwd'
 
+alias mc='mc -b'
 
--   name:       Create temp. dir
-    file:
-        path:   "{{ linux.dir_home }}/tmp"
-        state:  directory
-        owner:  "{{ linux.uid }}"
-        group:  "{{ linux.gid }}"
-        mode:   0700
+alias p8="ping -c 4 8.8.8.8"
