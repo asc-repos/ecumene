@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  Copyright 2007-2021 ASC
+#  Copyright 2007-2022 ASC
 #
 #  This file is part of "Οἰκουμένη" ("Ecumene") - set of applications and
 #  configurations to assist with deploy and set up of an environments.
