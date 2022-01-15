@@ -34,6 +34,7 @@ vm_params.each do |single_host_param|
     if ! single_host_param.has_key? "model"
         print "INFO: host '" \
             + single_host_param["hostname"] \
+            + "." + single_host_param["domain"] \
             + "' will be skipped as it have no 'model' declared.\n"
     end
 end
