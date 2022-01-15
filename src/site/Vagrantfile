@@ -1,5 +1,5 @@
 #
-#  Copyright 2013-2021 ASC
+#  Copyright 2013-2022 ASC
 #
 #  This file is part of "Οἰκουμένη" ("Ecumene") - set of applications and
 #  configurations to assist with deploy and set up of an environments.
@@ -22,10 +22,32 @@
 
 require 'json'
 
-vm_params = JSON.parse(File.read("meta-data.json"))
+file_metadata = "meta-data.json"
+vm_params = JSON.parse(File.read(file_metadata))
+
+if ! ENV.has_key? "model"
+    print "WARNING: Environment variable 'model' is not set. Appling defaults.\n"
+    ENV["model"] = "common"
+end
+
+vm_params.each do |single_host_param|
+    if ! single_host_param.has_key? "model"
+        print "INFO: host '" \
+            + single_host_param["hostname"] \
+            + "' will be skipped as it have no 'model' declared.\n"
+    end
+end
+
+vm_params.delete_if {|x| ! x.has_key? "model" \
+                        or ! x["model"].include? ENV["model"]}
+
+if vm_params.empty?
+    print "ERROR: There is no items in '" \
+            + file_metadata + "' for model '" + ENV["model"] + "'.\n"
+    exit 1
+end
 
 vagrant_conf_format_version = "2"
-
 Vagrant.configure(vagrant_conf_format_version) do |cnf|
     vm_params.each do |single_host_param|
         cnf.vm.define(single_host_param["hostname"]) do |c|

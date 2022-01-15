@@ -35,6 +35,7 @@ declare -r dir_this="$( dirname "${0}" )"
 
 declare -r file_inventory="inventory.json"
 
+declare -r model_default="common"
 
 function validate_json {
     set -e
@@ -115,7 +116,7 @@ if [ "${req_build_station,,}" == "true" ] ; then
     launch_ansible "${file_inventory}" "${@}" "build-station.yaml"
 fi
 if [ "${req_vm,,}" == "true" ] ; then
-    vagrant up --parallel "${@}"
+    model="${model:-$model_default}" vagrant up --parallel "${@}"
 fi
 if [ "${req_arbitrary,,}" == "true" ] ; then
     launch_ansible "${file_inventory}" "${@}"
@@ -132,7 +133,7 @@ if [ "${req_syslog,,}" == "true" ] ; then
     launch_ansible "${file_inventory}" "${@}" syslog-acceptor.yaml
 fi
 if [ "${req_delete,,}" == "true" ] ; then
-    vagrant destroy --force --parallel "${@}"
+    model="${model:-$model_default}" vagrant destroy --force --parallel "${@}"
 fi
 
 set +x
