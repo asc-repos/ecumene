@@ -38,3 +38,18 @@
         user:       "{{ ansible_user }}"
         state:      present
         key:        "{{ lookup('file', admin_public_key_file) }}"
+
+
+-   name:           Root's Shell appearance
+    copy:
+        src:        ps1-root.sh
+        dest:       /root/.ps1.sh
+        owner:      root
+        group:      root
+        mode:       0644
+
+
+-   name:           Root's Shell appearance
+    lineinfile:
+        path:       /root/.bashrc
+        line:       "if test -f /root/.ps1.sh ; then source /root/.ps1.sh ; fi"
