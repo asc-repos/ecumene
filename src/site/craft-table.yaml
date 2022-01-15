@@ -29,3 +29,11 @@
         -   role:   crafttable
     become:         no
     #become_user:    root
+
+-   name:   Environments revealing
+    hosts:
+        -   easy_admin
+    roles:
+        -   role:   uni/easy-admin
+    become:         yes
+    become_user:    root
