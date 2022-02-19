@@ -63,9 +63,14 @@ Vagrant.configure(vagrant_conf_format_version) do |cnf|
             c.vm.provision "ansible" do |a|
                 a.playbook = "vagrant-nodes-bootstrap.yaml"
                 a.extra_vars = {
-                    ip_explicit: single_host_param["ssh"]["ip"],
-                    ansible_python_interpreter: "/usr/bin/python3"
+                    ip_explicit: single_host_param["ssh"]["ip"]
                 }
+                if single_host_param["a_vars"].key?("ansible_python_interpreter")
+                    a.extra_vars["ansible_python_interpreter"] = single_host_param["ansible_python_interpreter"]
+                end
+                if single_host_param["a_vars"].key?("ansible_host_key_checking")
+                    a.extra_vars["ansible_host_key_checking"] = single_host_param["ansible_host_key_checking"]
+                end
                 a.raw_arguments = [
                         "--timeout",
                         "3600"  # In seconds.
