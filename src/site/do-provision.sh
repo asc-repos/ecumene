@@ -23,12 +23,17 @@
 
 
 PS4="+:\${0}:\${LINENO}: "
-set -xeu -o pipefail
-
+set -eu -o pipefail
 
 if [ "${#}" -lt 1 ] || [ "${*}" != "${*/--help/}" ] ; then
     cat "${0}" | egrep "([[:space:]]|\|)[\-]{1,2}[a-zA-Z0-9_\-]{1,})"
     exit 1
+fi
+
+if [ "${*}" != "${*/--verbose/}" ] ; then
+    set -x
+else
+    set +x
 fi
 
 declare -r dir_this="$( dirname "${0}" )"
