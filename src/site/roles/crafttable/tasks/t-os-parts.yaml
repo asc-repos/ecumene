@@ -22,28 +22,31 @@
 #
 ##
 
--   name:       Create satellites directories
-    file:
-        path:   "{{ item.acceptor }}"
-        state:  directory
-        owner: "root"
-        group: "root"
-        mode:   0755
-    become: yes
-    with_items:
-        -     acceptor: /home/.opt/backgrounds/wallpaper
-        -     acceptor: /home/.opt/desktop-files
+-   block:
+    -   name:       Create satellites directories
+        file:
+            path:   "{{ item.acceptor }}"
+            state:  directory
+            owner: "root"
+            group: "root"
+            mode:   0755
+        with_items:
+            -     acceptor: /home/.opt/backgrounds/wallpaper
+            -     acceptor: /home/.opt/desktop-files
 
 
--   name: Upload environment files
-    copy:
-        src: "{{ item.donor }}"
-        dest: "{{ item.acceptor }}"
-        owner: "root"
-        group: "root"
+    -   name: Upload environment files
+        copy:
+            src: "{{ item.donor }}"
+            dest: "{{ item.acceptor }}"
+            owner: "root"
+            group: "root"
+        with_items:
+            -    donor: home_dot-opt_backgrounds/wallpaper
+                 acceptor: /home/.opt/backgrounds
+            -    donor: home_dot-opt/desktop-files
+                 acceptor: /home/.opt
+
+
     become: yes
-    with_items:
-        -    donor: home_dot-opt_backgrounds/wallpaper
-             acceptor: /home/.opt/backgrounds
-        -    donor: home_dot-opt/desktop-files
-             acceptor: /home/.opt
+    become_user: root
