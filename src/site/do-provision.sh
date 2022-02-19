@@ -38,6 +38,7 @@ fi
 
 declare -r dir_this="$( dirname "${0}" )"
 
+declare -r file_meta_data="${dir_this}/meta-data.json"
 declare -r file_inventory="inventory.json"
 
 function get_selections {
@@ -72,15 +73,11 @@ function get_selections {
 }
 
 function select_model {
-    local -r file_meta_data="${dir_this}/meta-data.json"
-    test -e "${file_meta_data}" || return 1
-    validate_json "${file_meta_data}" || return 1
     local -ra models_list=($( cat "${file_meta_data}" | jq -r '.[] | select( .model != null ) | .model[]' | sort | uniq ))
     echo -n $( get_selections "${models_list[@]}" )
 }
 
 function validate_json {
-    set -e
     local -r file_json="${1:-$file_json}"
     jq --raw-output '.' "${file_json}" 1>/dev/null
 }
@@ -103,6 +100,7 @@ function launch_ansible {
 cd "${dir_this}"
 
 if [ ! -v model ] && [ "${*}" != "${*/--vm-/}" ] ; then
+    validate_json "${file_meta_data}"
     export model="$( select_model )"
     if [ -z "${model}" ] ; then
         echo "INFO:$( basename ${0} ):${LINENO}: 'model' value for Vagrant left empty." >&2
