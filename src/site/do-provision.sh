@@ -149,6 +149,9 @@ while [ ${#} -gt 0 ] ; do
         --syslog)
             req_syslog="true"
             ;;
+        --verbose)
+            true
+            ;;
         --)
             shift
             break
