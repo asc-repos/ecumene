@@ -25,7 +25,7 @@ require 'json'
 file_metadata = "meta-data.json"
 vm_params = JSON.parse(File.read(file_metadata))
 
-if ! ENV.has_key? "model"
+if ! ENV.has_key?("model") or ENV["model"].eql?("")
     print "WARNING: Environment variable 'model' is not set. Appling defaults.\n"
     ENV["model"] = "common"
 end

@@ -40,7 +40,44 @@ declare -r dir_this="$( dirname "${0}" )"
 
 declare -r file_inventory="inventory.json"
 
-declare -r model_default="common"
+function get_selections {
+    local -r a_text_for_select=("${@}")
+    local -a  cli_args_content=()
+    local idx
+
+    for idx in "${!a_text_for_select[@]}" ; do
+        cli_args_content+=("$idx" \
+                            "${a_text_for_select[$idx]}" \
+                            "off")
+    done
+
+    local -a  cmd_dialog=( \
+                        "whiptail" \
+                        "--separate-output" \
+                        "--radiolist" \
+                        "--notags" \
+                        "Select or not select a model:" \
+                        25 75 15)
+
+    local -a  selections=($( \
+                    "${cmd_dialog[@]}" \
+                    "${cli_args_content[@]}" \
+                    3>&2 2>&1 1>&3 ))
+
+    set +x
+
+    for idx in "${selections[@]}" ; do
+        echo "${a_text_for_select[$idx]}"
+    done
+}
+
+function select_model {
+    local -r file_meta_data="${dir_this}/meta-data.json"
+    test -e "${file_meta_data}" || return 1
+    validate_json "${file_meta_data}" || return 1
+    local -ra models_list=($( cat "${file_meta_data}" | jq -r '.[] | select( .model != null ) | .model[]' | sort | uniq ))
+    echo -n $( get_selections "${models_list[@]}" )
+}
 
 function validate_json {
     set -e
@@ -64,6 +101,15 @@ function launch_ansible {
 
 
 cd "${dir_this}"
+
+if [ ! -v model ] && [ "${*}" != "${*/--vm-/}" ] ; then
+    export model="$( select_model )"
+    if [ -z "${model}" ] ; then
+        echo "INFO:$( basename ${0} ):${LINENO}: 'model' value for Vagrant left empty." >&2
+    else
+        echo "INFO:$( basename ${0} ):${LINENO}: Vagrant model='${model}'." >&2
+    fi
+fi
 
 "inventories/inventory.py" --list > "${file_inventory}"
 set -e ; validate_json "${file_inventory}"
@@ -121,7 +167,7 @@ if [ "${req_build_station,,}" == "true" ] ; then
     launch_ansible "${file_inventory}" "${@}" "build-station.yaml"
 fi
 if [ "${req_vm_wake_up,,}" == "true" ] ; then
-    model="${model:-$model_default}" vagrant up --parallel "${@}"
+    model="${model}" vagrant up --parallel "${@}"
 fi
 if [ "${req_arbitrary,,}" == "true" ] ; then
     launch_ansible "${file_inventory}" "${@}"
