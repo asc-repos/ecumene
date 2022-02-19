@@ -66,8 +66,8 @@ set -e ; validate_json "${file_inventory}"
 req_crafttable="false"
 req_build_station="false"
 req_arbitrary="false"
-req_vm="false"
-req_delete="false"
+req_vm_wake_up="false"
+req_vm_delete="false"
 req_k8s="false"
 req_k8s_purge="false"
 req_syslog="false"
@@ -83,11 +83,11 @@ while [ ${#} -gt 0 ] ; do
         --arbitrary)
             req_arbitrary="true"
             ;;
-        --vm)
-            req_vm="true"
+        --vm-wake-up)
+            req_vm_wake_up="true"
             ;;
-        --delete)
-            req_delete="true"
+        --vm-delete)
+            req_vm_delete="true"
             ;;
         --k8s)
             req_k8s="true"
@@ -115,7 +115,7 @@ fi
 if [ "${req_build_station,,}" == "true" ] ; then
     launch_ansible "${file_inventory}" "${@}" "build-station.yaml"
 fi
-if [ "${req_vm,,}" == "true" ] ; then
+if [ "${req_vm_wake_up,,}" == "true" ] ; then
     model="${model:-$model_default}" vagrant up --parallel "${@}"
 fi
 if [ "${req_arbitrary,,}" == "true" ] ; then
@@ -132,7 +132,7 @@ if [ "${req_syslog,,}" == "true" ] ; then
     mkdir -p -m 700 ~/.kube
     launch_ansible "${file_inventory}" "${@}" syslog-acceptor.yaml
 fi
-if [ "${req_delete,,}" == "true" ] ; then
+if [ "${req_vm_delete,,}" == "true" ] ; then
     model="${model:-$model_default}" vagrant destroy --force --parallel "${@}"
 fi
 
