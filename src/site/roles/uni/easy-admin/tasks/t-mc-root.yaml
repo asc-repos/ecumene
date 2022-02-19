@@ -1,0 +1,58 @@
+---
+
+#
+#  Copyright 2013-2022 ASC
+#
+#  This file is part of "Οἰκουμένη" ("Ecumene") - set of applications and
+#  configurations to assist with deploy and set up of an environments.
+#
+#  Οἰκουμένη is free software: you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, either version 3 of
+#  the License, or (at your option) any later version.
+#
+#  Οἰκουμένη is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Οἰκουμένη.
+#  If not, see <http://www.gnu.org/licenses/>.
+#
+##
+
+
+-   name:       Define MC configuration diretory
+    set_fact:
+        dir_mc_conf_root: /root/.config/mc
+
+
+-   name:       Create configuration directory
+    file:
+        path:   "{{ item }}"
+        state:  directory
+        owner:  root
+        group:  root
+        mode:   0755
+    with_items:
+        - "{{ dir_mc_conf_root }}"
+        - "{{ dir_mc_conf_root }}/skins"
+
+
+-   name:       Upload configuration
+    copy:
+        src:    "{{ item.donor_file }}"
+        dest:   "{{ item.acceptor_dir }}/{{ item.donor_file | basename }}"
+        owner:  root
+        group:  root
+        mode:   0644
+    with_items:
+        -   donor_file:     mc-config/root/ini
+            acceptor_dir:   "{{ dir_mc_conf_root }}"
+        -   donor_file:     mc-config/root/panels.ini
+            acceptor_dir:   "{{ dir_mc_conf_root }}"
+        -   donor_file:     mc-config/root/skins/custom-modarcon16root-bright.ini
+            acceptor_dir:   "{{ dir_mc_conf_root }}/skins"
+        -   donor_file:     mc-config/root/skins/custom-modarcon16root-dark.ini
+            acceptor_dir:   "{{ dir_mc_conf_root }}/skins"

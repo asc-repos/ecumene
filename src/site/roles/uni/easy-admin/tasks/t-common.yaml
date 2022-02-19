@@ -23,5 +23,33 @@
 ##
 
 
--   include_tasks: t-common.yaml
--   include_tasks: t-mc-root.yaml
+-   name:           Launch permissions configuration upload
+    copy:
+        src:        _etc_sudoers.d_easy-admin
+        dest:       /etc/sudoers.d/easy-admin
+        owner:      root
+        group:      root
+        mode:       0440
+        validate:   "visudo -cf %s"
+
+
+-   name:           Set authorized keys
+    authorized_key:
+        user:       "{{ ansible_user }}"
+        state:      present
+        key:        "{{ lookup('file', admin_public_key_file) }}"
+
+
+-   name:           Root's Shell appearance
+    copy:
+        src:        ps1-root.sh
+        dest:       /root/.ps1.sh
+        owner:      root
+        group:      root
+        mode:       0644
+
+
+-   name:           Root's Shell appearance
+    lineinfile:
+        path:       /root/.bashrc
+        line:       "if test -f /root/.ps1.sh ; then source /root/.ps1.sh ; fi"
